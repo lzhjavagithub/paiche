@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <title>派车管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <link rel="stylesheet" href="../../static/css/font.css">
+    <link rel="stylesheet" href="../../static/css/xadmin.css">
+    <script type="text/javascript" src="../../static/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../../static/js/xadmin.js"></script>
+
+    <link rel="stylesheet" href="../../static/lib/layui/css/layui.css">
+    <script src="../../static/lib/layui/lay/modules/layer.js"></script>
+
+    <script src="../../static/js/jquery.min.js"></script>
+
+    <script src="../../static/bootstrap/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap-theme.css">
+
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        {margin:0; padding:0; border: solid  black 1px !important;}
+        td{
+            height: 35px;
+        }
+        table{
+            width: 150px;height: 20px;font-size: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="layui-fluid" style="width: 870px;height: 450px;margin-top: 35px">
+    <div class="layui-row">
+        <table id="print" style="@page  {
+                    size: landscape; width: 0em;
+                };font-size: 17px;font-family: 宋体;border-bottom: none" class="table">
+            <tr style="border: none" align="center">
+                <td style="border: none" align="center" colspan="6"><h2><strong>车辆行驶卡片</strong></h2></td>
+            </tr>
+            <tr style="border: none" >
+                <td style="border:none;line-height: 8px" >单位盖章：</td>
+                <td colspan="3" style="border: none"></td>
+                <td colspan="2" style="border: none;margin-right:auto;border-bottom: solid 1px black;line-height: 8px" align="right">No.<span id="no"></span></td>
+            </tr>
+            <tr style="border: solid 1px #1A1B20">
+                <td style="border-top: solid 1px black;border-right:solid 1px black;width: 210px" align="center">部别</td>
+                <td width="70" style="width: 20px;border-top: solid 1px black;border-bottom: black;border-right:solid 1px black" align="center">东城四离</td>
+                <td style="width: 20px;border-bottom: solid 1px black;border-right:solid 1px black" colspan="" align="center">驾驶员姓名</td>
+                <td style="width: 30px;border-bottom: solid 1px black" colspan="3" id="driver_name" align="center">
+                </td>
+            </tr>
+            <tr style="border: solid 1px #1A1B20">
+                <td align="center" style="width: 150px;border-bottom: solid 1px black;border-right:solid 1px black;border-top: solid 1px black">车型</td>
+                <td style="border-bottom: solid 1px black;border-top: solid 1px black;border-right:solid 1px black" id="cartype" align="center">
+                </td>
+                <td style="border-right:solid 1px black" align="center">车号</td>
+                <td colspan="3" id="car_no" align="center">
+                </td>
+            </tr>
+            <tr style="border: solid 1px #1A1B20">
+                <td style="border-right:solid 1px black" align="center">起止地点</td>
+                <td style="border-right:solid 1px black" align="center">里程表指数</td>
+                <td style="border-right:solid 1px black;border-top:solid 1px black" align="center">用车理由</td>
+                <td colspan="3" style="border-top:solid 1px black" align="center">起止时间</td>
+            </tr>
+            <tr style="border: solid 1px #1A1B20">
+                <td style="border-top: solid 1px black;border-right:solid 1px black" align="center">起：本院</td>
+                <td style="border-top: solid 1px black;border-right:solid 1px black" id="go">
+                </td>
+<!--                用车理由-->
+                <td rowspan="2" style="border-top: solid 1px black;width: 150px;border-right:solid 1px black" id="ly" align="center">
+
+                </td>
+                <td colspan="3" style="border-top: solid 1px black" id="qitime" width="100px" align="center">起：
+                </td>
+            </tr>
+            <tr style="border: solid 1px #1A1B20">
+                <td style="border-top: solid 1px black;border-right:solid 1px black" id="zhi" align="center">止：
+
+                </td>
+                <td style="border-top: solid 1px black" id="come">
+                </td>
+                <td colspan="3" style="border-top: solid 1px black" id="zhitime" align="center">止：
+                </td>
+            </tr>
+            <tr style="border: solid 1px #1A1B20">
+                <td style="border-top: solid 1px black;border-right:solid 1px black" align="center">用车单位或用车人</td>
+                <td style="border-top: solid 1px black;width: 150px" colspan="" id="username" align="center">
+                </td>
+                <td style="border-top: solid 1px black;border-left:solid 1px black;border-right: solid 1px black" align="center">用车人签名</td>
+                <td style="border-top: solid 1px black" colspan="3" align="center"></td>
+            </tr>
+            <tr style="border: solid 1px #1A1B20">
+                <td style="border-top: solid 1px black;border-right: solid 1px black" align="center">备注</td>
+                <td style="border-top: solid 1px black" colspan="5" id="b2" align="center">
+                </td>
+            </tr>
+            <!--批准人-->
+            <tr style="border: none;height: 30px; line-height: 30px">
+                <td style="border: none; line-height: 30px">批准人：</td>
+                <td style="border: none; line-height: 30px"></td>
+                <td style="border: none; line-height: 30px">审核人：</td>
+                <td style="border: none;width: 100px; line-height: 30px"></td>
+                <td style="border: none; line-height: 30px">值班员：</td>
+                <td style="border: none; line-height: 30px"></td>
+            </tr>
+            <tr style="border: none">
+                <td style="border: none" colspan="6" align="right"><span id="data1"></span></td>
+            </tr>
+        </table>
+        <button class="layui-btn" id="pri"  onclick="printf()">打印</button>
+    </div>
+</div>
+<script type="text/javascript">
+    var url = window.location.href;
+    var id= URL_Request('id');
+    console.log("id==>"+id);
+
+    // 填充表格数据
+    layui.use('table', function() {
+        var table = layui.table;
+
+        //检查项目添加到下拉框中
+        $.ajax({
+            type : "GET",
+            url : "/paiche/find/",
+            dataType : "json",
+            data: {
+                //'paicheId':id
+            },
+            success : function(data) {
+                console.log("加载", data);
+                var u = data.data;
+                console.log("加载", u);
+                $("#cartype").text(u.carType);
+                $("#no").text(u.no);
+                $("#driver_name").text(u.driverName);
+                $("#b2").text(u.remark);
+                $('#ly').text(u.matter);
+                $('#zhitime').text("止： "+u.gujiRetureTime);
+                $('#qitime').text("起： "+u.gujiStorageTime);
+                $('#car_no').text(u.carNo);
+                $('#username').text(u.useName);
+                $('#zhi').text('止：'+u.desName);
+                //$("#go").text('起：'+u.goMileage);
+                //$("#come").text('止：'+u.comMander);
+            }
+        });
+
+        function Format(now,mask) {
+            var d = new Date(now);
+            var zeroize = function (value, length)
+            {
+                if (!length) length = 2;
+                value = String(value);
+                for (var i = 0, zeros = ''; i < (length - value.length); i++)
+                {
+                    zeros += '0';
+                }
+                return zeros + value;
+            };
+
+            return mask.replace(/"[^"]*"|'[^']*'|\b(?:d{1,4}|m{1,4}|yy(?:yy)?|([hHMstT])\1?|[lLZ])\b/g, function ($0)
+            {
+                switch ($0)
+                {
+                    case 'd': return d.getDate();
+                    case 'dd': return zeroize(d.getDate());
+                    case 'ddd': return ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'][d.getDay()];
+                    case 'dddd': return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
+                    case 'M': return d.getMonth() + 1;
+                    case 'MM': return zeroize(d.getMonth() + 1);
+                    case 'MMM': return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+                    case 'MMMM': return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()];
+                    case 'yy': return String(d.getFullYear()).substr(2);
+                    case 'yyyy': return d.getFullYear();
+                    case 'h': return d.getHours() % 12 || 12;
+                    case 'hh': return zeroize(d.getHours() % 12 || 12);
+                    case 'H': return d.getHours();
+                    case 'HH': return zeroize(d.getHours());
+                    case 'm': return d.getMinutes();
+                    case 'mm': return zeroize(d.getMinutes());
+                    case 's': return d.getSeconds();
+                    case 'ss': return zeroize(d.getSeconds());
+                    case 'l': return zeroize(d.getMilliseconds(), 3);
+                    case 'L': var m = d.getMilliseconds();
+                        if (m > 99) m = Math.round(m / 10);
+                        return zeroize(m);
+                    case 'tt': return d.getHours() < 12 ? 'am' : 'pm';
+                    case 'TT': return d.getHours() < 12 ? 'AM' : 'PM';
+                    case 'Z': return d.toUTCString().match(/[A-Z]+$/);
+                    // Return quoted strings with the surrounding quotes removed
+                    default: return $0.substr(1, $0.length - 2);
+                }
+            });
+        };
+
+        // layui转换指定格式
+        // table.render({
+        //     elem: '#print',
+        //     url: '/paiche/findById',
+        //     where: {id: ''},
+        //     method: 'get',
+        //     contentType: 'application/json',
+        //     parseData: function(res){ //res 即为原始返回的数据
+        //         console.log(res.data.item)
+        //         return {
+        //             "code": res.status, //解析接口状态
+        //             "msg": res.message, //解析提示文本
+        //             "count": res.total, //解析数据长度
+        //             "data": res.data.item //解析数据列表
+        //         };
+        //     }
+        // });
+
+        /*function Format(now,mask) {
+            var d = new Date(now);
+            var zeroize = function (value, length)
+            {
+                if (!length) length = 2;
+                value = String(value);
+                for (var i = 0, zeros = ''; i < (length - value.length); i++)
+                {
+                    zeros += '0';
+                }
+                return zeros + value;
+            };
+
+            return mask.replace(/"[^"]*"|'[^']*'|\b(?:d{1,4}|m{1,4}|yy(?:yy)?|([hHMstT])\1?|[lLZ])\b/g, function ($0)
+            {
+                switch ($0)
+                {
+                    case 'd': return d.getDate();
+                    case 'dd': return zeroize(d.getDate());
+                    case 'ddd': return ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'][d.getDay()];
+                    case 'dddd': return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
+                    case 'M': return d.getMonth() + 1;
+                    case 'MM': return zeroize(d.getMonth() + 1);
+                    case 'MMM': return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+                    case 'MMMM': return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()];
+                    case 'yy': return String(d.getFullYear()).substr(2);
+                    case 'yyyy': return d.getFullYear();
+                    case 'h': return d.getHours() % 12 || 12;
+                    case 'hh': return zeroize(d.getHours() % 12 || 12);
+                    case 'H': return d.getHours();
+                    case 'HH': return zeroize(d.getHours());
+                    case 'm': return d.getMinutes();
+                    case 'mm': return zeroize(d.getMinutes());
+                    case 's': return d.getSeconds();
+                    case 'ss': return zeroize(d.getSeconds());
+                    case 'l': return zeroize(d.getMilliseconds(), 3);
+                    case 'L': var m = d.getMilliseconds();
+                        if (m > 99) m = Math.round(m / 10);
+                        return zeroize(m);
+                    case 'tt': return d.getHours() < 12 ? 'am' : 'pm';
+                    case 'TT': return d.getHours() < 12 ? 'AM' : 'PM';
+                    case 'Z': return d.toUTCString().match(/[A-Z]+$/);
+                    // Return quoted strings with the surrounding quotes removed
+                    default: return $0.substr(1, $0.length - 2);
+                }
+            });
+        };*/
+    });
+
+    //正则获取url中的参数
+    function URL_Request(strName) {
+        var strHref = document.location.toString();
+        var intPos = strHref.indexOf("?");
+        var strRight = strHref.substr(intPos + 1); //==========获取到右边的参数部分
+        var arrTmp = strRight.split("&"); //=============以&分割成数组
+
+        for (var i = 0; i < arrTmp.length; i++) //===========循环数组
+        {
+            var dIntPos = arrTmp[i].indexOf("=");
+            var paraName = arrTmp[i].substr(0, dIntPos);
+            var paraData = arrTmp[i].substr(dIntPos + 1);
+            if (paraName.toUpperCase() == strName.toUpperCase()) {
+                return paraData;
+            }
+        }
+        return "";
+    }
+
+    $(function () {
+        // 日期格式处理
+        var date=new Date();
+        // 获取当前日期时间
+        var Y = date.getFullYear() + '';
+        var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '';
+        var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate() + '';
+        var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours() + '';
+        var mm = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes() + '';
+        var ss = date.getSeconds() < 10 ? '0' + date.getDate() : date.getSeconds() ;
+
+        var newDate = Y+"年"+M+"月"+D+"日";
+        console.log('newDate--',newDate);
+        document.getElementById("data1").innerHTML = newDate;//在div中写入时间
+
+        var no = Y+M+D+hh+mm+ss;
+        //document.getElementById("no").innerHTML = no;
+    });
+
+    // 打印
+    function printf() {
+        document.getElementById('pri').style.display='none';
+        print();// 打印
+        window.location.replace("/welcome");
+    }
+</script>
+<script>var _hmt = _hmt || []; (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();</script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    <head>
+        <meta charset="UTF-8">
+        <title>派车单</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="../../static/css/font.css">
+        <link rel="stylesheet" href="../../static/css/xadmin.css">
+
+        <script src="../../static/js/jquery.min.js"></script>
+
+        <link rel="stylesheet" href="../../static/lib/layui/css/layui.css" media="all">
+        <script type="text/javascript" src="../../static/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="../../static/js/xadmin.js"></script>
+        <script src="../../static/lib/layui/transfer.js"></script>
+        <script src="../../static/bootstrap/js/bootstrap.js"></script>
+        <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.css">
+        <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap-theme.css">
+        <!--       // <script src="static/lib/layui/lay/modules/transfer.js"></script>-->
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+        <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+        <style type="text/css">
+            *{margin:0; padding:0; border: solid  red 1px !important;}
+            td{
+                height: 35px;
+            }
+            table{
+                width: 200px;height: 20px;font-size: 20px;
+            }
+        </style>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="layui-fluid" style="width: 1050px;height: 450px">
+            <div class="layui-row">
+                <div align="center">
+                <!--startprint-->
+                <form action="" >
+
+                <table id="print" style="@page  {
+                    size: landscape; width: 0em;
+                };font-size: 17px;font-family: 宋体;border-bottom: none" class="table">
+                    <tr style="border: none">
+                        <h2><strong>车辆行驶卡片</strong></h2>
+                    </tr>
+                    <tr style="border: none" >
+                        <td style="border:none" >单位盖章：</td>
+                        <td colspan="3" style="border: none"></td>
+                        <td colspan="2" style="border: none;margin-right:auto;border-bottom: solid 1px black" align="right">No.：<span id="no"></span></td>
+                    </tr>
+                    <tr style="border: solid 1px #1A1B20">
+                        <td style="border-top: solid 1px black;border-right:solid 1px black" align="center">部别</td>
+                        <td width="70" style="width: 20px;border-top: solid 1px black;border-bottom: black;border-right:solid 1px black">东城四离</td>
+                        <td style="width: 20px;border-bottom: solid 1px black;border-right:solid 1px black" colspan="" align="center">驾驶员姓名</td>
+                        <td style="width: 30px;border-bottom: solid 1px black" colspan="3">
+                            <div class="layui-input-inline">
+                                <input name="bhText3" id="bhText3" style="width:150px;position:absolute" size=10 value="">
+                                <select id="driverId" name="driverId" style="width: 170px" onchange="document.getElementById('bhText3').value=this.options[this.selectedIndex].text" lay-verify="required" lay-search="">
+                                    <option value="" style="width: 300px">请选择</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="border: solid 1px #1A1B20">
+                        <td align="center" style="width: 150px;border-bottom: solid 1px black;border-right:solid 1px black;border-top: solid 1px black">车型</td>
+                        <td style="border-bottom: solid 1px black;border-top: solid 1px black;border-right:solid 1px black">
+                            <div class="layui-inline layui-input-inline">
+                                <input name="bhText5" readonly id="bhText5" style="width:80px;position:absolute" size=10 value="">
+                                <select id="carType" name="carType" class="valid" style="width: 100px" onchange="document.getElementById('bhText5').value=this.options[this.selectedIndex].text" lay-verify="required" lay-search>
+                                    <option value="" >请选择</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td style="border-right:solid 1px black" align="center">车号</td>
+                        <td colspan="3">
+                            <div class="layui-input-inline">
+                                <input name="bhText2" id="bhText2" readonly style="width:150px;position:absolute" size=10 value="">
+                                <!-- onchange="changeCar(this,carId)" -->
+                                <select id="carId" name="carId" lay-filter="carId" class="valid" onchange="changeCar(this,carId)" style="width: 170px" lay-verify="required"  lay-search>
+                                    <option value="" style="width: 150px">请选择</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="border: solid 1px #1A1B20">
+                        <td style="border-right:solid 1px black" align="center">起止地点</td>
+                        <td style="border-right:solid 1px black" align="center">里程表指数</td>
+                        <td style="border-right:solid 1px black;border-top:solid 1px black" align="center">用车理由</td>
+                        <td colspan="3" style="border-top:solid 1px black" align="center">起止时间</td>
+                    </tr>
+                    <tr style="border: solid 1px #1A1B20">
+                        <td style="border-top: solid 1px black;border-right:solid 1px black">起：本院</td>
+                        <td style="border-top: solid 1px black;border-right:solid 1px black">
+<!--                            出场：<input type="text" id="goMileage" class="layui-input"/>-->
+                        </td>
+                        <td rowspan="2" style="border-top: solid 1px black;border-right:solid 1px black">
+                            <!--用车理由-->
+                            <div>
+                                <input name="bhText" id="bhText" style="width:210px;position:absolute" size=10 value="">
+                                <select id="matter" name="matter" style="width: 230px" onchange="document.getElementById('bhText').value=this.options[this.selectedIndex].text" lay-verify="required" lay-search>
+                                    <option value="" style="width: 800px">请选择</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td colspan="3" style="border-top: solid 1px black">起：<input type="text" id="goTime" style="width: 200px" class="layui-input"></td>
+                    </tr>
+                    <tr style="border: solid 1px #1A1B20">
+                        <td style="border-top: solid 1px black;border-right:solid 1px black">止：
+                            <div class="layui-input-inline">
+                                <input name="bhText4" id="bhText4" style="width:75px;position:absolute" size=10 value="">
+                                <select id="destination" name="destination" style="width: 95px" onchange="document.getElementById('bhText4').value=this.options[this.selectedIndex].text" lay-verify="required" lay-search="">
+                                    <option value="" style="width: 300px">请选择</option>
+                                </select>
+                            </div></td>
+                        <td style="border-top: solid 1px black">
+<!--                            回场：<input type="text" id="comeMileage" class="layui-input"/>-->
+                        </td>
+                        <td colspan="3" style="border-top: solid 1px black">止：<input type="text" id="returnTime" style="width: 200px" class="layui-input"></td>
+                    </tr>
+                    <tr style="border: solid 1px #1A1B20">
+                        <td style="border-top: solid 1px black;border-right:solid 1px black">用车单位或用车人</td>
+                        <td style="border-top: solid 1px black" colspan="">
+                            <!--用车人-->
+                            <div class="layui-inline layui-input-inline">
+                                <input name="bhText1" id="bhText1" style="width:220px;position:absolute" size=10 value="">
+                                <select id="driverName" name="driverName" class="valid" style="width: 240px" onchange="document.getElementById('bhText1').value=this.options[this.selectedIndex].text" lay-verify="required" lay-search>
+                                    <option value="" >请选择</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td style="border-top: solid 1px black;border-left:solid 1px black;border-right: solid 1px black" align="center">用车人签名</td>
+                        <td style="border-top: solid 1px black" colspan="3"></td>
+                    </tr>
+                    <!--<tr style="border: solid 1px #1A1B20">
+                        <td style="border-top: solid 1px black;border-right: solid 1px black" align="center">备注</td>
+                        <td style="border-top: solid 1px black" colspan="5"> <input type="text" style="width: 845px" class="layui-input" id="remark" width="5500"/> </td>
+                    </tr>-->
+                    <!--批准人-->
+                    <tr style="border: none">
+                        <td style="border: none">批准人：</td>
+                        <td style="border: none"></td>
+                        <td style="border: none">审核人：</td>
+                        <td style="border: none"></td>
+                        <td style="border: none">值班员：</td>
+                        <td style="border: none"></td>
+                    </tr>
+                    <tr style="border: none">
+                        <td style="border: none" colspan="6" align="right"><span id="data1"></span></td>
+                    </tr>
+                </table>
+                </form>
+                <!--endprint-->
+                </div>
+<!--                <button class="layui-btn" id="printf" onclick="myprint()">打印预览</button>-->
+            </div>
+            <div class="layui-row">
+                <button class="layui-btn" id="save" onclick="save()">保存并打印预览</button>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            layui.use(['layer','jquery','form'], function() {
+                var form = layui.form;
+                var layer = layui.layer;
+                //var util = layui.util;
+                var laydate = layui.laydate;
+                var $=layui.$;
+
+                form.on('select(carId)', function(data){
+                        console.log(data.value);
+                        var carId=data.value;
+                        $.ajax({
+                            type: 'GET',
+                            url: '/paiche/findcardriver/'+carId,
+                            dataType:  'json',
+                            // success: function(data){
+                            //     var department=data.data[0].t_department;
+                            //     console.log(department);
+                            //     //检查项目添加到下拉框中
+                            //     $.ajax({
+                            //         url: '/useMan/tdriverDepartment',
+                            //         dataType: 'json',
+                            //         type: 'get',
+                                    success: function (data) {
+                                        console.log(data);
+                                        $('#driverId').html('');
+                                        $.each(data.data, function (index, item) {
+                                            //alert(item.carId)
+                                            $('#driverId').append(new Option(item.driverId, item.driverName));// 下拉菜单里添加元素
+                                        });
+
+                                        //重新渲染 固定写法
+                                        layui.form.render("select");
+                                    }
+                                })
+                    });
+
+                /*车型*/
+                $.ajax({
+                    url : '/TCar/tcarType',
+                    dataType : 'json',
+                    type : 'get',
+                    success : function(data) {
+                        console.log("Cartype",data.data);
+
+                        $.each(data.data, function(index, item) {
+                            $('#carType').append(new Option(item.typeName, item.typeName));// 下拉菜单里添加元素
+                        });
+
+                        //重新渲染 固定写法
+                        layui.form.render("select");
+                    }
+                })
+                /* form.render(); */
+                //检查项目添加到下拉框中  车号
+                $.ajax({
+                    url: '/TCar/findstatus',
+                    dataType: 'json',
+                    type: 'get',
+
+                    success: function (data) {
+                        console.log(data);
+                        $.each(data.data, function (index, item) {
+                            //alert(item.carId)
+                            $('#carId').append(new Option(item.t_car_no, item.t_car_id));// 下拉菜单里添加元素
+                        });
+
+                        //重新渲染 固定写法
+                        layui.form.render("select");
+                    }
+                })
+
+                // 目的地
+                $.ajax({
+                    url: '/destination/select',
+                    dataType: 'json',
+                    type: 'get',
+                    success: function (data) {
+                        console.log(data);
+
+                        $.each(data.data, function (index, item) {
+                            //alert(item.carId)
+                            $('#destination').append(new Option(item.desName, item.desId));// 下拉菜单里添加元素
+                            console.log("",item.desId);
+                        });
+
+                        //重新渲染 固定写法
+                        layui.form.render("select");
+                    }
+                })
+
+                // 用车人
+                $.ajax({
+                    url: '/useMan/tdriverName',
+                    dataType: 'json',
+                    type: 'get',
+                    success: function (data) {
+                        console.log(data.data);
+
+                        $.each(data.data, function (index, item) {
+                            //alert(item.carId)
+                            $('#driverName').append(new Option(item.driverName, item.driverId));// 下拉菜单里添加元素
+                        });
+
+                        //重新渲染 固定写法
+                        layui.form.render("select");
+                    }
+                })
+
+                /* form.render(); */
+                //检查项目添加到下拉框中 驾驶员
+                $.ajax({
+                    url: '/TDriver/tdriverName',
+                    dataType: 'json',
+                    type: 'get',
+                    success: function (data) {
+                        console.log(data);
+
+                        $.each(data.data, function (index, item) {
+                            //alert(item.driverId)
+                            $('#driverId').append(new Option(item.driverName, item.driverId));// 下拉菜单里添加元素
+                        });
+
+                        //重新渲染 固定写法
+                        layui.form.render("select");
+                    }
+                })
+
+                // 事由
+                $.ajax({
+                    url: '/matter/findAll',
+                    dataType: 'json',
+                    type: 'get',
+                    success: function (data) {
+                        console.log(data.data);
+
+                        $.each(data.data, function (index, item) {
+                            //alert(item.carId)
+                            $('#matter').append(new Option(item.cause, item.tid));// 下拉菜单里添加元素
+                        });
+
+                        //重新渲染 固定写法
+                        layui.form.render("select");
+                    }
+                })
+            })
+
+            // 日期处理
+            layui.use('laydate', function(){
+                var laydate = layui.laydate;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#driveTime' //指定元素
+                    ,type: 'datetime'
+                });
+
+                laydate.render({
+                    elem:'#returnTime'
+                    ,type:'datetime'
+                })
+
+                laydate.render({
+                    elem:'#goTime'
+                    ,type:'datetime'
+                })
+            });
+
+            // 日期转换
+            function Format(now,mask) {
+                var d = new Date(now);
+                var zeroize = function (value, length)
+                {
+                    if (!length) length = 2;
+                    value = String(value);
+                    for (var i = 0, zeros = ''; i < (length - value.length); i++)
+                    {
+                        zeros += '0';
+                    }
+                    return zeros + value;
+                };
+
+                return mask.replace(/"[^"]*"|'[^']*'|\b(?:d{1,4}|m{1,4}|yy(?:yy)?|([hHMstT])\1?|[lLZ])\b/g, function ($0)
+                {
+                    switch ($0)
+                    {
+                        case 'd': return d.getDate();
+                        case 'dd': return zeroize(d.getDate());
+                        case 'ddd': return ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'][d.getDay()];
+                        case 'dddd': return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
+                        case 'M': return d.getMonth() + 1;
+                        case 'MM': return zeroize(d.getMonth() + 1);
+                        case 'MMM': return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+                        case 'MMMM': return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()];
+                        case 'yy': return String(d.getFullYear()).substr(2);
+                        case 'yyyy': return d.getFullYear();
+                        case 'h': return d.getHours() % 12 || 12;
+                        case 'hh': return zeroize(d.getHours() % 12 || 12);
+                        case 'H': return d.getHours();
+                        case 'HH': return zeroize(d.getHours());
+                        case 'm': return d.getMinutes();
+                        case 'mm': return zeroize(d.getMinutes());
+                        case 's': return d.getSeconds();
+                        case 'ss': return zeroize(d.getSeconds());
+                        case 'l': return zeroize(d.getMilliseconds(), 3);
+                        case 'L': var m = d.getMilliseconds();
+                            if (m > 99) m = Math.round(m / 10);
+                            return zeroize(m);
+                        case 'tt': return d.getHours() < 12 ? 'am' : 'pm';
+                        case 'TT': return d.getHours() < 12 ? 'AM' : 'PM';
+                        case 'Z': return d.toUTCString().match(/[A-Z]+$/);
+                        // Return quoted strings with the surrounding quotes removed
+                        default: return $0.substr(1, $0.length - 2);
+                    }
+                });
+            };
+
+            $(function () {
+                // 日期格式处理
+                var date=new Date();
+                // 获取当前日期时间
+                var Y = date.getFullYear() + '';
+                var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '';
+                var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate() + '';
+                var hh = date.getHours() < 10 ? '0' + date.getHours() : date.getHours() + '';
+                var mm = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes() + '';
+                var ss = date.getSeconds() < 10 ? '0' + date.getDate() : date.getSeconds() ;
+
+                var newDate = Y+"年"+M+"月"+D+"日";
+                console.log('newDate--',newDate);
+                document.getElementById("data1").innerHTML = newDate;//在div中写入时间
+
+                var no = Y+M+D+hh+mm+ss;
+                document.getElementById("no").innerHTML = no;
+            });
+
+            // 保存
+            function save() {
+                // 取文本框的值
+                var bhText1 = $("#bhText1").val();// 用车人
+                var bhText = $("#bhText").val();// 事由
+                var bhText2 = $("#bhText2").val();// carid
+                var bhText3 = $("#bhText3").val();// 驾驶员姓名
+                var bhText4 = $("#bhText4").val();// 目的地
+                var bhText5 = $("#bhText5").val();//车型
+
+                var returnTime = $('#returnTime').val();
+                var goTime = $('#goTime').val();
+
+                var no = $("#no").text();
+                var driverId=$("#driverId").val();
+                var carId=$("#carId").val();
+                var useMan=$("#driverName").val();
+                var cause=$("#matter").val();
+                var destination=$("#destination").val();
+                //var goMileage=$("#goMileage").val();
+                //var mileage=$("#mileage").val();
+                //var comMander=$("#comeMileage").val();
+                var carType = $("#carType").val();
+                // 估计出场离场时间
+                var gujiRetureTime=Format($("#returnTime").val(),"yyyy-MM-dd HH:mm:ss");
+                var gujiStorageTime=Format($("#goTime").val(),"yyyy-MM-dd HH:mm:ss");
+                var remark=$("#remark").val();
+                console.log('no-->',no);
+                console.log('driverId,carId,useMan,cause,destination,' +
+                    'goMileage,mileage,comMander,returnTime,remark==>' +
+                    driverId,carId,useMan,cause,destination,gujiRetureTime,gujiStorageTime);
+                console.log('手写用车人,手写事由,手写车牌号,手写驾驶员姓名,手写目的地,carType=>' +
+                    '',bhText1,bhText,bhText2,bhText3,bhText4,no,carType);
+
+                if (bhText1.length<=0||bhText.length<=0||
+                    returnTime.length<=0||
+                    bhText2.length<=0||
+                    goTime.length<=0||
+                    bhText3.length<=0||
+                    bhText4.length<=0||
+                    bhText5.length<=0){
+                    layer.msg('您有未添选的内容！');
+                }else {
+                    $.ajax({
+                        url: "/paiche/add",
+                        type: "post",
+                        dataType: "json",
+                        data: {
+                            // 文本框手动输入 保存到 用车人表
+                            'useName': bhText1,
+                            'carNo': bhText2,
+                            'matter': bhText,
+                            'desName': bhText4,
+                            'driverName': bhText3,
+                            'carType': bhText5,
+
+                            //派车表
+                            //'paicheId':paicheId,
+                            //'carType':carType,
+                            'no': no,
+                            'driverId': driverId,
+                            'carId': carId,
+                            'useMan': useMan,
+                            'cause': cause,
+                            //'weight':weight,
+                            'destination': destination,
+                            //'man':weight,
+                            //'driveTime': driveTime,
+                            //'goMileage': goMileage,
+                            //'mileage': mileage,
+                            //'comMander': comMander,
+                            'gujiRetureTime': gujiRetureTime,
+                            'gujiStorageTime': gujiStorageTime,
+                            //'remark': remark
+                        },
+                        success: function (data) {
+                            //alert("派车单保存成功！");
+                            if(data.code===20000){
+                                layer.msg('保存派车单成功！');
+                                document.getElementById('save').style.display = 'none';
+                                window.location = './order-print';
+                                //print();
+                             }else{
+                                layer.msg('你是管理员没有此权限,请用操作员账号！');
+                            }
+                        }
+                    })
+                    // var index = parent.layer.getFrameIndex(window.name);
+                    // var p = parent;
+
+                    //然后下面先关闭子窗口
+                    //parent.layer.close(index);
+
+                    //再刷新
+                    //p.location.reload();
+                    //$("#printf").hide();
+                }
+            };
+
+            // 车号和驾驶员联动
+            function changeCar(obj,carId){
+                var val = document.getElementById('bhText2').value=obj.options[obj.selectedIndex].value;
+                // console.log(carId);
+                document.getElementById('bhText2').value=obj.options[obj.selectedIndex].text;
+                console.log(val);
+                $.ajax({
+                    type: "GET",
+                    url: "/paiche/findcardriver/"+val,
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        $("#bhText3").val(data.data[0].t_drive_name);
+                        $("#driverId").val(data.data[0].t_driver_id);
+                        layui.form.render("select");
+                    }
+                })
+                var carId = document.getElementById("carId");
+                console.log(carId);
+                var driverId = document.getElementById("driverId");
+                console.log(driverId);
+
+            }
+        </script>
+
+        <script>
+            var _hmt = _hmt || []; (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>
+    </body>
+
+</html>

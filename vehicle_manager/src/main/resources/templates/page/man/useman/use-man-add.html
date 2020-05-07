@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+<meta charset="UTF-8">
+<title>欢迎页面-X-admin2.2</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<link rel="stylesheet" href="../../../static/css/font.css">
+<link rel="stylesheet" href="../../../static/css/xadmin.css">
+<script type="text/javascript" src="../../../static/lib/layui/layui.js"
+	charset="utf-8"></script>
+<script type="text/javascript" src="../../../static/js/xadmin.js"></script>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+<!--[if lt IE 9]>
+            <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+            <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-row">
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<label for="" class="layui-form-label"> <span class="x-red"></span>用车人姓名
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="driverName" name="driverName" required=""
+							autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="" class="layui-form-label"> <span class="x-red"></span>所属部门
+					</label>
+					<div class="layui-input-inline">
+						<select id="department" name="department">
+							<option value="">请选择</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label for="" class="layui-form-label"> <span class="x-red"></span>电话
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="tel" name="tel" required=""
+							autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label for="" class="layui-form-label"> <span class="x-red"></span>身份证号
+					</label>
+					<div class="layui-input-inline">
+						<input type="text" id="cardId" name="cardId" required=""
+							autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label for="" class="layui-form-label"> <span class="x-red"></span>备注
+					</label>
+					<div class="layui-input-inline">
+						<textarea id="remark" class="layui-textarea" name="remark"></textarea>
+						<!-- <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea> -->
+					</div>
+				</div>
+				<!--                     <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label">
+                            <span class="x-red">*</span>确认密码</label>
+                        <div class="layui-input-inline">
+                            <input type="password" id="L_repass" name="repass" required="" lay-verify="repass" autocomplete="off" class="layui-input"></div>
+                    </div> -->
+				<div class="layui-form-item">
+					<label for="L_repass" class="layui-form-label"></label>
+					<button id="addUser" class="layui-btn" lay-filter="add()"
+						lay-submit="">增加</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+		layui.use('form', function() {
+			var form = layui.from;
+			/* form.render(); */
+			//检查项目添加到下拉框中	
+			$.ajax({
+				url : '/TDriver/tdriverStatus',
+				dataType : 'json',
+				type : 'get',
+				success : function(data) {
+					console.log(data.data);
+
+					$.each(data.data, function(index, item) {
+						$('#status').append(
+								new Option(item.statusName, item.statusNum));// 下拉菜单里添加元素
+					});
+
+					//重新渲染 固定写法
+					layui.form.render("select");
+				}
+			})
+
+			$.ajax({
+				url : '/TDriver/tdriverDepartment',
+				dataType : 'json',
+				type : 'get',
+				success : function(data) {
+					console.log(data.data);
+					$.each(data.data, function(index, item) {
+						$('#department').append(
+								new Option(item.departmentName,
+										item.departmentNum));// 下拉菜单里添加元素
+					});
+
+					//重新渲染 固定写法
+					layui.form.render("select");
+				}
+			})
+
+		});
+
+		$("#addUser").click(function() {
+							var driverName = $("#driverName").val();
+							var department = $("#department").val();
+							var tel = $("#tel").val();
+							var cardId = $("#cardId").val();
+							var status = $("#status").val();
+							var remark = $("#remark").val();
+							$.ajax({
+										url : "/useMan/tcarinsert",
+										type : 'post',
+										dataType : "JSON",
+										data : {
+											'driverName' : driverName,
+											'department' : department,
+											'tel' : tel,
+											'cardId' : cardId,
+											'status' : status,
+											'remark' : remark
+										},
+										async : false,
+										success : function(data) {
+											/* // 获得frame索引
+											var index = parent.layer.getFrameIndex(window.name);
+											//关闭当前frame
+											parent.layer.close(index);  */
+
+											var index = parent.layer
+													.getFrameIndex(window.name), p = parent;
+
+											//然后下面先关闭子窗口
+											parent.layer.close(index);
+											//再刷新
+											p.location.reload();
+										}
+									})
+						})
+	</script>
+</body>
+
+</html>

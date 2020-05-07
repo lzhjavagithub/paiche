@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" ;>
+    <head>
+        <meta charset="UTF-8">
+        <title>派车管理</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <link rel="stylesheet" href="../../static/css/font.css">
+        <link rel="stylesheet" href="../../static/css/xadmin.css">
+        <script src="../../static/lib/layui/layui.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="../../static/lib/layui/css/layui.css">
+        <script src="../../static/js/jquery.min.js"></script>
+
+        <script type="text/javascript" src="../../static/js/xadmin.js"></script>
+
+        <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.css">
+        <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap-theme.css">
+        <script src="../../static/bootstrap/js/bootstrap.js"></script>
+
+        <script type="text/javascript">
+            $(function(){
+                layui.use('layer', function(){ //独立版的layer无需执行这一句
+                    var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+
+                    //触发事件
+                    var active = {
+                        confirmTrans: function(){
+                            //配置一个透明的询问框
+                            layer.msg('审核派车单', {
+                                time: 20000, //20s后自动关闭
+                                btn: ['审核通过', '审核不通过']
+                            });
+                        }
+
+                    };
+
+                });
+                console.log("听党指挥、能打胜仗、作风优良");
+
+                var arr=[];
+
+                // 查询派车列表
+                $.ajax({
+                    type: "GET",
+                    url: "/paiche/findAll",
+                    dataType: "json",
+                    success: function(data){
+                        console.log(data);
+                        var u = data.data;
+                        var s = "   <td>" + "<input type='checkbox'/>" + "</td>";
+                        for(var i = 0; i < u.length; i++) {
+                            arr.push(u[i].t_status);
+                            if(u[i].t_status==0){
+                                // 待审核
+                                u[i].t_status='待审核';
+                            }else if (u[i].t_status==1) {
+                                // 审核未通过
+                                u[i].t_status='审核未通过';
+                            }else {
+                                // 审核通过
+                                u[i].t_status='审核通过';
+                            }
+                            //console.log(u[i].t_paiche_id);
+                            paicheId=u[i].t_paiche_id;
+                            status=u[i].t_status;
+                            //console.log(u[i].t_paiche_id);
+                            s = "<tr>" +
+                               // "   <td>" + "<input type='checkbox' lay-skin=\"primary\" name='driver'/>" + "</td>" +
+                              //  "   <td>" + u[i].t_paiche_id + "</td>" +
+                                "   <td>" + u[i].t_no + "</td>" +
+                                "   <td>" + Format(u[i].t_date,'yyyy-MM-dd HH:mm:ss') + "</td>" +
+                                "   <td>" + u[i].t_use_name + "</td>" +
+                                "   <td>" + u[i].department_name + "</td>" +
+                                "   <td>" + u[i].t_cause + "</td>" +
+                                "   <td>" + u[i].t_man + "</td>" +
+                                "   <td>" + u[i].t_weight + "</td>" +
+                                "   <td>" + u[i].t_car_no + "</td>" +
+                                "   <td>" + u[i].t_drive_name + "</td><td>";
+
+                                if (u[i].t_status=="待审核") {
+                                    s+= "<span class=\"layui-btn\">" + u[i].t_status + "</span>" ;
+                                }else if(u[i].t_status=="审核通过"){
+                                    s+= "<span class=\"layui-btn layui-btn-normal\">"+ u[i].t_status + "</span>" ;
+                                }else if(u[i].t_status=="审核未通过"){
+                                    s+= "<span class=\"layui-btn layui-btn-danger\">"+ u[i].t_status + "</span>" ;
+                                }
+
+                                //"  </td><td>" + u[i].t_status + "</td> ";
+                                s+=" </td> <td> <a title='审核状态' onclick=\"xadmin.open('审核状态','/orderview?id="
+                                +u[i].t_paiche_id+"',650,150)\" href='javascript:;'>" +
+                                "     <i class=\"layui-icon layui-icon-set-fill\"></i></a>" +
+                               // "   <a title='打印预览' onclick=\"xadmin.open('查看预览派车单','/viewpaiche?id="+u[i].t_paiche_id+"',1000,620)\" href='#'> " +
+                                "     <i class=\"layui-icon\">&#xe63c;</i></a><a title='删除' href='/paiche/delete/"+u[i].t_paiche_id+"'> " +
+                                "     <i class=\"layui-icon\">&#xe640;</i></a></td>"
+                            "</tr>";
+                            $("#tab").append(s);
+                        }
+                    }
+                });
+
+                // 查询车辆
+                $.ajax({
+                    type: "GET",
+                    url: "/TCar/findstatus",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data.data);
+                        var u = data.data;
+                        for (var i = 0; i < u.length; i++) {
+                            var t = Format(u[i].createDate, "yyyy-MM-dd HH:mm:ss");
+                            var s = "<tr><td>"
+                                + u[i].carNo + "</td><td>"
+                                + u[i].typeName + "</td><td>"
+                                + u[i].driverName + "</td></tr>";
+                            $("#car").append(s);
+                        }
+                    }
+                })
+            });
+
+            function Format(now,mask) {
+                var d = new Date(now);
+                var zeroize = function (value, length)
+                {
+                    if (!length) length = 2;
+                    value = String(value);
+                    for (var i = 0, zeros = ''; i < (length - value.length); i++)
+                    {
+                        zeros += '0';
+                    }
+                    return zeros + value;
+                };
+
+                return mask.replace(/"[^"]*"|'[^']*'|\b(?:d{1,4}|m{1,4}|yy(?:yy)?|([hHMstT])\1?|[lLZ])\b/g, function ($0)
+                {
+                    switch ($0)
+                    {
+                        case 'd': return d.getDate();
+                        case 'dd': return zeroize(d.getDate());
+                        case 'ddd': return ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'][d.getDay()];
+                        case 'dddd': return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
+                        case 'M': return d.getMonth() + 1;
+                        case 'MM': return zeroize(d.getMonth() + 1);
+                        case 'MMM': return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+                        case 'MMMM': return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()];
+                        case 'yy': return String(d.getFullYear()).substr(2);
+                        case 'yyyy': return d.getFullYear();
+                        case 'h': return d.getHours() % 12 || 12;
+                        case 'hh': return zeroize(d.getHours() % 12 || 12);
+                        case 'H': return d.getHours();
+                        case 'HH': return zeroize(d.getHours());
+                        case 'm': return d.getMinutes();
+                        case 'mm': return zeroize(d.getMinutes());
+                        case 's': return d.getSeconds();
+                        case 'ss': return zeroize(d.getSeconds());
+                        case 'l': return zeroize(d.getMilliseconds(), 3);
+                        case 'L': var m = d.getMilliseconds();
+                            if (m > 99) m = Math.round(m / 10);
+                            return zeroize(m);
+                        case 'tt': return d.getHours() < 12 ? 'am' : 'pm';
+                        case 'TT': return d.getHours() < 12 ? 'AM' : 'PM';
+                        case 'Z': return d.toUTCString().match(/[A-Z]+$/);
+                        // Return quoted strings with the surrounding quotes removed
+                        default: return $0.substr(1, $0.length - 2);
+                    }
+                });
+            };
+
+            // 删除
+            function member_del(obj,paicheId) {
+                alert(paicheId);
+                layer.confirm("确认要删除吗？",function (index) {
+                    console.log(paicheId);
+                    /*$(obj).parents("tr").remove();
+                    console.log(paicheId);*/
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/paiche/delete/',// id获取不到
+                        data:{
+                            'paicheId':paicheId
+                        },
+                        cache: true,
+                        async: true
+                    });
+                    layer.msg('已删除',{
+                        icon: 1,
+                        time: 1000
+                    });
+                    alert(paicheId);
+
+                });
+                alert(paicheId)
+            }
+        </script>
+
+    </head>
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+                <a href="">首页</a>
+                <a href="">派车管理</a>
+<!--              <a><cite>导航元素</cite></a>-->
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body">
+                            <div class="layui-input-inline layui-show-xs-block">
+                                    <input class="layui-input" placeholder="开单日期" type="text" name="date" id="date">
+                            </div>
+                            <div class="layui-input-inline layui-show-xs-block">
+                                <button class="layui-btn" id="" onclick="selectNo()">
+                                    <i class="layui-icon">&#xe615;</i>查询
+                                </button>
+                            </div>
+                        </div>
+                       <!-- <div th:switch="${user.per}">
+                            <div class="layui-card-header" th:case="'2'">
+                                <button class="layui-btn" onclick="xadmin.open('填写派车单','/order-add',1200,800)">
+                                    <i class="layui-icon"></i>添加</button>
+                            </div>
+                        </div>-->
+                        <div class="layui-card-body" style="height: auto">
+
+                            <div id="t">
+                            <table id="tab" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>单号</th>
+                                        <th>开单日期</th>
+                                        <th>用车人</th>
+                                        <th>用车人部门</th>
+                                        <th>事由去向</th>
+                                        <th>人数</th>
+                                        <th>载重</th>
+                                        <th>车牌号</th>
+                                        <th>驾驶员姓名</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        <div class="layui-card-body ">
+                            <div class="page">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        layui.use(['laydate', 'form'], function() {
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start' //指定元素
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end' //指定元素
+            });
+        });
+
+        function delAll(argument) {
+
+            var data = tableCheck.getData();
+
+            layer.confirm('确认要删除吗？' + data,
+            function(index) {
+                //捉到所有被选中的，发异步进行删除
+                layer.msg('删除成功', {
+                    icon: 1
+                });
+                $(".layui-form-checked").not('.header').parents('tr').remove();
+            });
+        }
+
+        layui.use(['layer','form'], function() {
+            var form = layui.form;
+            var layer = layui.layer;
+            form.on('select(myselect)', function(data){
+                console.log(data.value);
+                var driveName=data.value;
+                $.ajax({
+                    type: 'POST',
+                    url: '/paiche/mantodept/'+driveName,
+                    dataType:  'json',
+                    success: function(data){
+                        var department=data.data[0].t_department;
+                        console.log(department);
+                        //检查项目添加到下拉框中
+                        $.ajax({
+                            url: '/useMan/tdriverDepartment',
+                            dataType: 'json',
+                            type: 'get',
+                            success: function (data) {
+                                console.log(data);
+                                $.each(data.data, function (index, item) {
+                                    //alert(item.carId)
+                                    $('#department').append(new Option(item.departmentName, item.departmentNum));// 下拉菜单里添加元素
+                                    $('#department').val(department);
+                                });
+
+                                //重新渲染 固定写法
+                                layui.form.render("select");
+                            }
+                        })
+                    }
+                });
+            });
+
+        })
+
+        // 日期处理
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#driveTime' //指定元素
+                ,type: 'datetime'
+            });
+
+            laydate.render({
+                elem:'#returnTime'
+                ,type:'datetime'
+            })
+        });
+
+        // 日期转换
+        function Format(now,mask) {
+            var d = new Date(now);
+            var zeroize = function (value, length)
+            {
+                if (!length) length = 2;
+                value = String(value);
+                for (var i = 0, zeros = ''; i < (length - value.length); i++)
+                {
+                    zeros += '0';
+                }
+                return zeros + value;
+            };
+
+            return mask.replace(/"[^"]*"|'[^']*'|\b(?:d{1,4}|m{1,4}|yy(?:yy)?|([hHMstT])\1?|[lLZ])\b/g, function ($0)
+            {
+                switch ($0)
+                {
+                    case 'd': return d.getDate();
+                    case 'dd': return zeroize(d.getDate());
+                    case 'ddd': return ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'][d.getDay()];
+                    case 'dddd': return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d.getDay()];
+                    case 'M': return d.getMonth() + 1;
+                    case 'MM': return zeroize(d.getMonth() + 1);
+                    case 'MMM': return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getMonth()];
+                    case 'MMMM': return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][d.getMonth()];
+                    case 'yy': return String(d.getFullYear()).substr(2);
+                    case 'yyyy': return d.getFullYear();
+                    case 'h': return d.getHours() % 12 || 12;
+                    case 'hh': return zeroize(d.getHours() % 12 || 12);
+                    case 'H': return d.getHours();
+                    case 'HH': return zeroize(d.getHours());
+                    case 'm': return d.getMinutes();
+                    case 'mm': return zeroize(d.getMinutes());
+                    case 's': return d.getSeconds();
+                    case 'ss': return zeroize(d.getSeconds());
+                    case 'l': return zeroize(d.getMilliseconds(), 3);
+                    case 'L': var m = d.getMilliseconds();
+                        if (m > 99) m = Math.round(m / 10);
+                        return zeroize(m);
+                    case 'tt': return d.getHours() < 12 ? 'am' : 'pm';
+                    case 'TT': return d.getHours() < 12 ? 'AM' : 'PM';
+                    case 'Z': return d.toUTCString().match(/[A-Z]+$/);
+                    // Return quoted strings with the surrounding quotes removed
+                    default: return $0.substr(1, $0.length - 2);
+                }
+            });
+        };
+    </script>
+
+</html>

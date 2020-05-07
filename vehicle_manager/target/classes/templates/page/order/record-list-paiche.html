@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" ;>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>派车列表</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <!--<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+
+        <link rel="stylesheet" href="../../static/css/font.css">
+        <link rel="stylesheet" href="../../static/css/xadmin.css">
+        <script src="../../static/lib/layui/layui.js"></script>
+        <script src="../../static/js/xadmin.js"></script>
+        <script src="../../static/js/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                $('#js-export').click(function(){
+                    window.location.href="/chucheExport";
+                });
+            })
+        </script>
+        <style>
+            .layui-card{overflow-y: scroll;}
+        </style>
+    </head>
+
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <!--<div class="layui-form">
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select class="layui-input" id="paiCheDeptId" name="paiCheDeptId"  lay-filter="paiCheDeptId">
+                                        <option>请选择部门</option>
+                                        <option  th:each="deLi:${deptList}" th:value="${deLi.departmentNum}" th:text="${deLi.departmentName}"></option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select id="paicheuseManId" class="layui-inpu" name="paiheuseManId"   lay-verify="required">
+                                        <option selected="selected">请选择用车人</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select id="paichecarId"  class="layui-inpu" name="paichecarId"  >
+                                        <option>请选择车牌号</option>
+                                        <option  th:each="CarLi:${carList}" th:value="${CarLi.carId}" th:text="${CarLi.carNo}"></option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select class="layui-input" name="paichedriverId" id="paichedriverId">
+                                        <option>请选择驾驶员</option>
+                                        <option  th:each="li:${driverList}" th:value="${li.driverId}" th:text="${li.driverName}"></option>
+                                    </select>
+                                    &lt;!&ndash;<input type="text" id="drivername" name="driverName" placeholder="驾驶员" autocomplete="off" class="layui-input">&ndash;&gt;
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input class="layui-input" placeholder="开始日" name="paichestartTime" id="paichestartTime"></div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input class="layui-input" placeholder="截止日" name="paicheendTime" id="paicheendTime"></div>
+
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn"  data-type="reload">
+                                        <i class="layui-icon">&#xe615;</i></button>
+                                </div >
+                            </div>
+
+                            <div class="layui-input-inline layui-show-xs-block">
+                                <button class="layui-btn" id="js-export">
+                                    导出Execl表格
+                                </button>
+                            </div>
+                        </div>-->
+<!--                            <a class="layui-btn layui-btn-xs" lay-event="quxiao">取消派车单</a>
+                                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除派车单</a>
+-->
+                        <table class="layui-table layui-form"  id="paicherecord" lay-filter="test"></table>
+                            <script th:inline="none" type="text/html" id="barDemo">
+                                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除派车单</a>
+                                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="print">打印</a>
+                            </script>
+                            <script th:inline="none" type="text/html" id="buttonIpl">
+                                {{#  if(d.status == -1){ }}
+                                <button class="layui-btn layui-btn-normal layui-btn-mini">待审核</button>
+                                {{#  } else  if(d.status == 1){ }}
+                                <button class="layui-btn layui-btn-danger layui-btn-mini">已取消</button>
+                                {{#  } else if(d.status==2){ }}
+                                <button class="layui-btn layui-btn-normal layui-btn-mini">正常</button>
+                                {{#  } else { }}
+                                <button class="layui-btn layui-btn-normal layui-btn-mini">已完成</button>
+                                {{#  } }}
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+<script th:inline="none">
+
+    layui.use(['table'], function() {
+        var laypage = layui.laypage
+            ,table =layui.table;
+        table.render({
+            elem: '#paicherecord'
+            ,method:'POST'
+            ,height: 800
+            ,even: true
+            ,url: '/paicheSelectRecords' //数据接口
+            ,title: '派车列表'
+            ,page: true //开启分页
+            ,cols: [[ //表头
+                {field: 'paicheno', title: '派车单号', width:150,align:'center'}
+                ,{field: 'paichedate', title: '开单日期', width:180,align:'center'}
+                //,{field: 'department', title: '用车人部门', width: 120, align:'center'}
+                ,{field: 'useMan', title: '用车人', width:120,align:'center'}
+                ,{field: 'cause',title: '任务内容', width: 200, align:'center'}
+                // ,{field: 'man', title: '人数', width:80,align:'center'}
+                // ,{field: 'weight', title: '载重', width: 80, align:'center'}
+                ,{field: 'destination', title: '目的地', width:150,align:'center'}
+                ,{field: 'carNo', title: '车牌号', width: 120, align:'center'}
+                ,{field: 'carType', title: '车辆类型', width:120,align:'center'}
+                ,{field: 'driverName', title: '驾驶员', width: 120, align:'center'}
+                ,{field: 'gujistorageTime', title:'出场日期', width: 180,align:'center'}
+                ,{field: 'gujireturnTime', title:'回场日期', width: 180,align:'center'}
+                ,{field: 'status', title:'派车状态', templet: '#buttonIpl', width: 120}
+                ,{fixed: 'right', width: 240, align:'center', toolbar: '#barDemo'}
+            ]]
+        });
+
+        //监听头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id)
+                ,data = checkStatus.data; //获取选中的数据
+            switch(obj.event){
+                case 'add':
+                    layer.msg('添加');
+                    break;
+                case 'update':
+                    if(data.length === 0){
+                        layer.msg('请选择一行');
+                    } else if(data.length > 1){
+                        layer.msg('只能同时编辑一个');
+                    } else {
+                        layer.alert('编辑 [id]：'+ checkStatus.data[0].id);
+                    }
+                    break;
+                case 'delete':
+                    if(data.length === 0){
+                        layer.msg('请选择一行');
+                    } else {
+                        layer.msg('删除');
+                    }
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            var paicheNo=data.paicheno;
+            var carNo=data.carNo;
+            if(layEvent === 'quxiao'){
+                layer.confirm('真的取消订单行么', function(index){
+                    $.ajax({
+                        type: "get",
+                        url: '/quxiaoPaiche',
+                        data: {
+                            paicheNo:paicheNo,
+                            carNo:carNo
+                        },
+                        dataType: "json",
+                        async: false,
+                        success: function (data) {
+                            obj.del(); //删除对应行（tr）的DOM结构
+                            layer.close(index);
+                            layer.msg('派车单已取消');
+                        }
+                    });
+                });
+            } else if(layEvent === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del(); //删除对应行（tr）的DOM结构
+                    layer.close(index);
+                    $.ajax("/deletePaiche?paicheNo="+paicheNo+"&carNo="+carNo)
+                });
+            } else if(layEvent === 'edit'){
+                layer.msg('编辑操作');
+            } else if (layEvent === 'print') {
+                /*layer.open({
+                    title: 'dayinyulan',
+                    type: 2,
+                    area: ['800px', '600%'],
+                    shade: 0,
+                    maxmin: true,
+                    content: '/order-paiche-print'//?paicheNo='+paicheNo
+                });*/
+                console.log("派车单ID：",paicheNo);
+                window.location = './order-paiche-print?paicheNo='+paicheNo;
+            }
+        });
+
+        var $ =layui.$;
+        $('.layui-form .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+             /* active ={reload:function() {
+                    var chuCheDeptId =$('#chuCheDeptId');
+                    var chucheuseManId=$('#chucheuseManId');
+                    var chuchecarId=$('#chuchecarId');
+                    var chuchedriverId =$('#chuchedriverId');
+                    var startTime=$('#startTime');
+                    var endTime=$('#endTime');
+                    table.reload('testReload', {
+                        where: { //设定异步数据接口的额外参数
+                                chuCheDeptId: chuCheDeptId.val(),
+                                chucheuseManId: chucheuseManId.val(),
+                                chuchecarId: chuchecarId.val(),
+                            chuchedriverId: chuchedriverId.val(),
+                            chuchestartTime: startTime.val(),
+                            chucheendTime: endTime.val()
+                        }
+                    })
+                }
+                }*/
+                })
+        //总页数大于页码总数
+       /* laypage.render({
+            elem: 'demo1'
+            , count: 10 //数据总数
+            , jump: function (obj,first) {
+                console.log(obj);
+                page1 = obj.curr;
+                if( !first ) {
+
+                }
+            }
+        });*/
+
+        layui.use(['layer', 'jquery', 'form'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        form.on('select(chuCheDeptId)', function (data) {
+            console.log(data);
+            var deptId=data.value;
+            if(deptId==="请选择部门"){
+                deptId=null;
+            }
+            $.ajax({
+                url: '/selectManByDept?deptId='+deptId,
+                dataType: 'json',
+                type: 'get',
+                success: function (data) {
+                    $('#chucheuseManId').html('<option selected="selected">请选择用车人</option>');
+                    $.each(data.data, function (index, item) {
+
+                        $('#chucheuseManId').append(new Option(item.useName, item.driverId));// 下拉菜单里添加元素
+                    });
+
+                    //重新渲染 固定写法
+                    layui.form.render("select");
+                }
+            })
+        });
+    });
+
+    layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#startTime', //指定元素
+                //type:'datetime', // 可选择：年、月、日、时、分、秒
+                //format: 'yyyy-MM-dd HH:mm:ss', //指定时间格式
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#endTime', //指定元素
+               // type:'datetime', // 可选择：年、月、日、时、分、秒
+                //format: 'yyyy-MM-dd HH:mm:ss', //指定时间格式
+            });
+        });
+</script>
+</html>

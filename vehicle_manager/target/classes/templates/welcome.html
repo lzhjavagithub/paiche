@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>欢迎页面-X-admin2.2</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+        <link rel="stylesheet" href="static/css/font.css">
+        <link rel="stylesheet" href="static/css/xadmin.css">
+        <script type="text/javascript" src="static/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="static/js/xadmin.js"></script>
+        <script type="text/javascript" src="static/js/jquery.min.js"></script>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <style type="text/css">
+        	#div1{
+        		float: left;
+        	}
+        	#div2{
+        		float: right;
+        	}
+        	#div3{
+        		float: right;
+        		height:50px;
+        		line-height: 50px;
+        	}
+        	#datetime{
+        		font-size: 20px;
+        	}
+        	#img1{
+        		 filter: alpha(opacity=50); opacity:0.8;
+        	}
+        	 #tr1{
+        		background-color: #F7F7F7;
+        	}
+        	#tr2{
+        		background-color: #F7F7F7; 
+        	}
+        	#tr3{
+        		background-color: #F7F7F7; 
+        	} 
+        	
+        </style>
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                    <!--    <div class="layui-card-body ">
+                            <blockquote class="layui-elem-quote" >欢迎
+                                <span class="x-red" th:text="${user.userName}"> </span>
+                            </blockquote>
+                        </div>-->
+                    </div>
+                </div>
+
+
+
+			<table class="layui-table" lay-size="lg">
+
+				<thead>
+<!--					<tr>-->
+<!--						<th style="text-align: center; font-size: 25px " colspan="9" height="100px"><img id="img1" alt="北京卫戍区派车管理系统" width="100%" height="100%" src="static/images/jun81.jpg"></img> 北京卫戍区派车管理系统</th>-->
+<!--					</tr>-->
+				</thead>
+					<tr id="tr1">
+						<td colspan="9"></td>
+					</tr>
+				
+					<tr>
+						<td></td>
+						<td>车辆总数</td>
+						<td id="num1" colspan="2"></td>
+						<td>出勤车辆总数</td>
+						<td id="num2" colspan="2"></td>
+						<td>待命车辆总数</td>
+						<td id="num3"></td>
+					</tr>
+					<tr id="tr2">
+						<td colspan="9"></td>
+					</tr>
+					<!-- <tr>
+						<td></td>
+						<td>值班班长</td>
+						<td id="man1" colspan="2"></td>
+						<td>值班员</td>
+						<td id="man2" colspan="4"></td>
+					</tr>
+					<tr  id="tr3">
+						<td colspan="9"></td>
+					</tr> -->
+					
+					</table>
+					
+				<div id="div1">
+				<table class="layui-table">
+
+				<thead>
+					<tr>
+						<td style="text-align: center; font-size: 25px " colspan="9" height="50px">出勤车辆明细</td>
+					</tr>
+					<tr>
+						<th>车号</th>
+						<th hidden>车型</th>
+						<th>驾驶员</th>
+						<th width="300">任务描述</th>
+						<th>预计出场时间</th>
+						<th>出场时间</th>
+						<th>预计回场时间</th>
+						<th>回场时间</th>
+						<th>状态</th>
+					</tr>
+				</thead>
+				<tbody id="tab">
+					
+				</tbody>
+				</table>
+				</div>
+				
+				<div id="div1">
+				<table class="layui-table">
+				<thead>
+					<tr>
+						<td style="text-align: center; font-size: 25px " colspan="4" height="50px">待命车辆明细</td>
+					</tr>
+					<tr>
+						<td>车号</td>
+						<td hidden>车型</td>
+						<td colspan="2">驾驶员</td>
+					</tr>
+				</thead>
+				<tbody id="tab1">
+					
+				</tbody>
+				</table>
+			    </div>
+			<div class="layui-col-md12">
+                    <div id="div3"><blockquote class="layui-elem-quote layui-quote-nm"><span id="datetime"></span></blockquote></div>
+            </div>
+            
+			<div class="layui-col-md12">
+                    <blockquote class="layui-elem-quote">北京乾德永达科技有限公司提供技术支持 版权所有@2019-2099 </blockquote>
+            </div>
+            <hr class="layui-bg-black"/>
+            </div>
+            
+        </div>
+        <script>
+layui.use('table', function(){
+  var table = layui.table;
+	 
+	 		var a=$.ajax({url:"/TCar/findstatus",async:false});
+	 		console.log(a);
+	 		var b=$.ajax({url:"/TCar/findstatus1",async:false});
+	 		console.log(b);
+
+	 		var u = a.responseJSON.data;
+	 		var u1 = b.responseJSON.data;
+	 		console.log(u);
+	 		console.log(u1);
+			 
+	 		
+			 for (var i = 0; i < u1.length; i++) {
+				 
+				  var s= "<tr><td>"
+					 +u1[i].t_car_no +"</td><td hidden>"
+					 +u1[i].type_name +"</td><td>"
+					 +u1[i].t_drive_name +"</td><td>"
+					 +u1[i].t_cause +"</td>";
+					 
+					 
+					 s+="<td>"+u1[i].t_guji_storage_time + "</td>";
+					 if(u1[i].t_storage_time!=undefined && u1[i].t_storage_time!=""){
+						 s+="<td>"+u1[i].t_storage_time + "</td>";
+					 }else(
+							 s+="<td>暂无出场纪录</td>"
+							 )
+					 
+					 s+="<td>"+u1[i].t_guji_reture_time + "</td>";
+					 if(u1[i].t_return_time!=undefined && u1[i].t_return_time!=""){
+						 s+="<td>"+u1[i].t_return_time + "</td>";
+					 }else(
+							 s+="<td>暂无回场记录</td>"
+							 )
+					 
+					 
+					 if(u1[i].t_status=="1"){
+						 s+="<td><span class=\"layui-btn layui-btn-normal \">"+ u1[i].status_name + "</span></td>"
+					 }else if(u1[i].t_status=="2"){
+						 s+="<td><span class=\"layui-btn \">"+ u1[i].status_name + "</span></td>"
+					 }
+					 
+					 s+="</tr>";
+				 $("#tab").append(s);
+			 } 
+			 
+			 for (var i = 0; i < u.length; i++) {
+				 var s = "<tr><td>"
+						 + u[i].t_car_no + "</td><td hidden>"
+						 + u[i].type_name  + "</td><td colspan=\"2\">"
+						 + u[i].t_drive_name+ "</td></tr>";
+				 $("#tab1").append(s);
+			 } 
+			 
+			 var num=$.ajax({url:"/TCar/findAll",async:false});
+
+				var num1 = num.responseJSON.data.length;
+				console.log(num1);
+				$("#num1").text(num1);
+
+
+				var num2 = b.responseJSON.data.length;
+				console.log(num2);
+				$("#num2").text(num2);
+
+
+				var num3 = a.responseJSON.data.length;
+				console.log(num3);
+				$("#num3").text(num3);
+				
+			/* var man=$.ajax({url:"/TCar/finddutydate", async:false});
+			var man1 = man.responseJSON.data[0];
+			console.log(man1);
+			$("#man1").text(man1.duty_leader);
+			$("#man2").text(man1.duty_man); */
+			function timeStr() {
+				var str;
+				var hh = new Date().getHours();
+				if (hh < 10) hh = '0' + hh;
+				var mm = new Date().getMinutes();
+				if (mm < 10) mm = '0' + mm;
+				var ss = new Date().getSeconds();
+				if (ss < 10) ss = '0' + ss;
+				var yy = new Date().getYear();
+				if (yy < 1900) yy = yy + 1900;
+				var MM = new Date().getMonth() + 1;
+				if (MM < 10) MM = '0' + MM;
+				var dd = new Date().getDate();
+				if (dd < 10) dd = '0' + dd;
+				var ww = new Date().getDay();
+				if (ww == 0) ww = "星期日";
+				if (ww == 1) ww = "星期一";
+				if (ww == 2) ww = "星期二";
+				if (ww == 3) ww = "星期三";
+				if (ww == 4) ww = "星期四";
+				if (ww == 5) ww = "星期五";
+				if (ww == 6) ww = "星期六";
+				str = yy + "年" + MM + "月" + dd + "日" + hh + ":" + mm + ":" + ss + " " + ww;
+				return (str);
+				}
+				timeText();
+				function timeText(){
+				var domStr = timeStr();
+				$("#datetime").text("当前时间："+domStr);
+				setTimeout(timeText,1000);
+				}
+});
+</script>
+    </body>
+    
+</html>
